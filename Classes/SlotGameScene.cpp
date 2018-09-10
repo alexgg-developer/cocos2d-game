@@ -89,7 +89,7 @@ bool SlotGameScene::init()
 		m_spinButton->setPosition(Vec2(x, y));
 	}
 
-	this->addChild(m_spinButton, 1);
+	this->addChild(m_spinButton, 2);
 
 	// add "SlotGameScene" splash screen"
 	auto sprite = Sprite::create("interface.png");
@@ -103,8 +103,14 @@ bool SlotGameScene::init()
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
 		// add the sprite as a child to this layer
-		this->addChild(sprite, 0);
+		this->addChild(sprite, 1);
 	}
+
+	m_slotsLayer = SlotsLayer::create();
+	m_slotsLayer->addSpin({ FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON, 
+		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES });
+	this->addChild(m_slotsLayer, 0);
+
 	return true;
 }
 

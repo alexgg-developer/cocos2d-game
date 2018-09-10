@@ -22,29 +22,21 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _SLOTGAME_SCENE_H__
-#define _SLOTGAME_SCENE_H__
+#ifndef _SLOTS_LAYER_H__
+#define _SLOTS_LAYER_H__
 
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
-#include "SlotsLayer.h"
-
 USING_NS_CC;
 
-class SlotGameScene : public cocos2d::Scene
+class SlotSpinLayer : public cocos2d::Layer
 {
 public:
-    static cocos2d::Scene* createScene();
-
     virtual bool init();
-    
-	void spinButtonClick();    
+      
     // implement the "static create()" method manually
-    CREATE_FUNC(SlotGameScene);
-private:
-	ui::Button* m_spinButton;
-	SlotsLayer* m_slotsLayer;
+    CREATE_FUNC(SlotSpinLayer);
 };
 
-#endif //_SLOTGAME_SCENE_H__S
+#endif //_SLOTS_LAYER_H__S

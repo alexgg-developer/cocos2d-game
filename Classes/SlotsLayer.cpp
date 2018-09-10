@@ -1,18 +1,18 @@
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
+
  http://www.cocos2d-x.org
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,29 +22,33 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _SLOTGAME_SCENE_H__
-#define _SLOTGAME_SCENE_H__
-
-#include "cocos2d.h"
-#include "ui/CocosGUI.h"
-
 #include "SlotsLayer.h"
+#include "Figure.h"
+
+#include "SimpleAudioEngine.h"
+
+#include <iostream>
 
 USING_NS_CC;
 
-class SlotGameScene : public cocos2d::Scene
+
+bool SlotsLayer::init()
 {
-public:
-    static cocos2d::Scene* createScene();
+	//////////////////////////////
+	// 1. super init first
+	if (!Layer::init())
+	{
+		return false;
+	}
+	return true;
+}
 
-    virtual bool init();
-    
-	void spinButtonClick();    
-    // implement the "static create()" method manually
-    CREATE_FUNC(SlotGameScene);
-private:
-	ui::Button* m_spinButton;
-	SlotsLayer* m_slotsLayer;
-};
-
-#endif //_SLOTGAME_SCENE_H__S
+void SlotsLayer::addSpin(const std::vector<FigureType>& figures)
+{
+	for (FigureType figure : figures) {
+		const std::string figureFileName = "Figures/" + std::to_string(figure) + ".png";
+		auto figureSprite = Sprite::create(figureFileName);
+		figureSprite->setPosition(figureSprite->getContentSize().width * figure, this->getContentSize().height * 0.5f);
+		this->addChild(figureSprite);
+	}
+}

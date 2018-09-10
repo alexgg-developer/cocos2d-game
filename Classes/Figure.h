@@ -22,29 +22,14 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _SLOTGAME_SCENE_H__
-#define _SLOTGAME_SCENE_H__
+#ifndef _FIGURE_H__
+#define _FIGURE_H__
 
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
-#include "SlotsLayer.h"
-
 USING_NS_CC;
 
-class SlotGameScene : public cocos2d::Scene
-{
-public:
-    static cocos2d::Scene* createScene();
+enum FigureType { BELL = 1, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY };
 
-    virtual bool init();
-    
-	void spinButtonClick();    
-    // implement the "static create()" method manually
-    CREATE_FUNC(SlotGameScene);
-private:
-	ui::Button* m_spinButton;
-	SlotsLayer* m_slotsLayer;
-};
-
-#endif //_SLOTGAME_SCENE_H__S
+#endif //_FIGURES_H__S
