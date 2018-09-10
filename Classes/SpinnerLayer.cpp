@@ -22,7 +22,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "SlotSpinLayer.h"
+#include "SpinnerLayer.h"
 #include "SimpleAudioEngine.h"
 
 #include <iostream>
@@ -30,7 +30,7 @@
 USING_NS_CC;
 
 // on "init" you need to initialize your instance
-bool SlotSpinLayer::init()
+bool SpinnerLayer::init()
 {
 	//////////////////////////////
 	// 1. super init first
@@ -38,5 +38,24 @@ bool SlotSpinLayer::init()
 	{
 		return false;
 	}
+
+	auto figureSprite = Sprite::create("Figures/1.png");
+	m_figureHeight = figureSprite->getContentSize().height;
+	m_figureWidth = figureSprite->getContentSize().width;
+
 	return true;
 }
+
+void SpinnerLayer::addFigures(const std::vector<FigureType>& figures)
+{
+	size_t i = 0;
+	for (FigureType figure : figures) {
+		const std::string figureFileName = "Figures/" + std::to_string(figure) + ".png";
+		auto figureSprite = Sprite::create(figureFileName);
+		figureSprite->setPosition(50.0f + m_figureWidth * 0.5f,
+			this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight * i);
+		this->addChild(figureSprite);
+		++i;
+	}
+}
+

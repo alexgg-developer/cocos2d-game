@@ -85,7 +85,7 @@ bool SlotGameScene::init()
 		//float width = m_spinButton->getContentSize().width;
 		//float height = m_spinButton->getContentSize().height;
 		float x = visibleSize.width * 0.5f;
-		float y = 45 + m_spinButton->getContentSize().height / 2;
+		float y = 45.0f + m_spinButton->getContentSize().height / 2;
 		m_spinButton->setPosition(Vec2(x, y));
 	}
 
@@ -107,7 +107,7 @@ bool SlotGameScene::init()
 	}
 
 	m_slotsLayer = SlotsLayer::create();
-	m_slotsLayer->addSpin({ FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON, 
+	m_slotsLayer->addSpinner({ FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON, 
 		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES });
 	this->addChild(m_slotsLayer, 0);
 
@@ -116,6 +116,6 @@ bool SlotGameScene::init()
 
 void SlotGameScene::spinButtonClick()
 {
-	std::cout << "spin!" << std::endl;
-	m_spinButton->setEnabled(false);
+	m_slotsLayer->spin();
+	//m_spinButton->setEnabled(false);
 }

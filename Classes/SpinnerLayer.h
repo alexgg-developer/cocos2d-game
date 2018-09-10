@@ -22,21 +22,26 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef _SLOTS_LAYER_H__
-#define _SLOTS_LAYER_H__
+#ifndef _SLOTS_SPIN_LAYER_H__
+#define _SLOTS_SPIN_LAYER_H__
 
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
+#include "Figure.h"
+
 USING_NS_CC;
 
-class SlotSpinLayer : public cocos2d::Layer
+class SpinnerLayer : public cocos2d::Layer
 {
 public:
     virtual bool init();
+	void addFigures(const std::vector<FigureType>& figures);
       
     // implement the "static create()" method manually
-    CREATE_FUNC(SlotSpinLayer);
+    CREATE_FUNC(SpinnerLayer);
+private:
+	float m_figureHeight, m_figureWidth;
 };
 
-#endif //_SLOTS_LAYER_H__S
+#endif //_SLOTS_SPIN_LAYER_H__S

@@ -43,12 +43,16 @@ bool SlotsLayer::init()
 	return true;
 }
 
-void SlotsLayer::addSpin(const std::vector<FigureType>& figures)
+void SlotsLayer::addSpinner(const std::vector<FigureType>& figures)
 {
-	for (FigureType figure : figures) {
-		const std::string figureFileName = "Figures/" + std::to_string(figure) + ".png";
-		auto figureSprite = Sprite::create(figureFileName);
-		figureSprite->setPosition(figureSprite->getContentSize().width * figure, this->getContentSize().height * 0.5f);
-		this->addChild(figureSprite);
-	}
+	SpinnerLayer* newSlotSpinLayer = SpinnerLayer::create();
+	newSlotSpinLayer->addFigures(figures);
+	m_slotsSpinLayers.push_back(newSlotSpinLayer);
+	this->addChild(newSlotSpinLayer);
+}
+
+void SlotsLayer::spin()
+{
+	auto position = m_slotsSpinLayers[0]->getPosition();
+	m_slotsSpinLayers[0]->setPosition(position.x , position.y + 212.0f);
 }

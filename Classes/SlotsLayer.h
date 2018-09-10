@@ -31,6 +31,7 @@
 #include<vector>
 
 #include "Figure.h"
+#include "SpinnerLayer.h"
 
 USING_NS_CC;
 
@@ -38,9 +39,12 @@ class SlotsLayer : public cocos2d::Layer
 {
 public:
     virtual bool init();
-	void addSpin(const std::vector<FigureType>& figures);
+	void addSpinner(const std::vector<FigureType>& figures);
+	void spin();
     // implement the "static create()" method manually
     CREATE_FUNC(SlotsLayer);
+private:
+	std::vector<SpinnerLayer*> m_slotsSpinLayers;
 };
 
 #endif //_SLOTS_LAYER_H__S
