@@ -26,6 +26,9 @@
 #define _SLOTGAME_SCENE_H__
 
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
+
+USING_NS_CC;
 
 class SlotGameScene : public cocos2d::Scene
 {
@@ -34,11 +37,10 @@ public:
 
     virtual bool init();
     
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    
+	void spinButtonClick();    
     // implement the "static create()" method manually
     CREATE_FUNC(SlotGameScene);
+	ui::Button* m_spinButton;
 };
 
 #endif //_SLOTGAME_SCENE_H__S

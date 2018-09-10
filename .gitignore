@@ -39,3 +39,6 @@ Debug
 /proj.win32/Debug.win32
 *.opendb
 *.ipch
+*.log
+*.tlog
+*.cache
