@@ -54,7 +54,8 @@ void SpinnerLayer::setFigures(std::vector<FigureType>& figures)
 	for (FigureType figure : figures) {
 		const std::string figureFileName = "Figures/" + std::to_string(figure) + ".png";
 		auto figureSprite = Sprite::create(figureFileName);
-		figureSprite->setPosition(50.0f + m_figureWidth * 0.5f,
+		
+		figureSprite->setPosition(m_figureWidth * 0.5f,
 			this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight * i);
 		this->addChild(figureSprite);
 		m_spritesFigures.push_back(figureSprite);
@@ -88,7 +89,7 @@ void SpinnerLayer::prepareNextResult()
 	int randomFigure = distr(engine);
 	//CCLOG("%i", randomFigure);
 	auto figureSpriteTop = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
-	figureSpriteTop->setPosition(50.0f + m_figureWidth * 0.5f,
+	figureSpriteTop->setPosition(m_figureWidth * 0.5f,
 		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f);
 	figureSpriteTop->setVisible(false);
 	this->addChild(figureSpriteTop);
@@ -97,7 +98,7 @@ void SpinnerLayer::prepareNextResult()
 	randomFigure = (randomFigure + 1) % m_figures.size();
 
 	auto figureSpriteMiddle = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
-	figureSpriteMiddle->setPosition(50.0f + m_figureWidth * 0.5f,
+	figureSpriteMiddle->setPosition(m_figureWidth * 0.5f,
 		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight);
 	figureSpriteMiddle->setVisible(false);
 	this->addChild(figureSpriteMiddle);
@@ -106,7 +107,7 @@ void SpinnerLayer::prepareNextResult()
 	randomFigure = (randomFigure + 1) % m_figures.size();
 
 	auto figureSpriteBottom = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
-	figureSpriteBottom->setPosition(50.0f + m_figureWidth * 0.5f,
+	figureSpriteBottom->setPosition(m_figureWidth * 0.5f,
 		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight * 2.0f);
 	figureSpriteBottom->setVisible(false);
 	this->addChild(figureSpriteBottom);

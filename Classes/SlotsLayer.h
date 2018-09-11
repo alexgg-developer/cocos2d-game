@@ -45,6 +45,8 @@ public:
     CREATE_FUNC(SlotsLayer);
 private:
 	std::vector<SpinnerLayer*> m_slotsSpinLayers;
+
+	void spinActions(SpinnerLayer * const spinner, float timeSpinning, float delayTime);
 };
 
 #endif //_SLOTS_LAYER_H__S

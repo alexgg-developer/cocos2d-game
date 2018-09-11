@@ -101,17 +101,35 @@ bool SlotGameScene::init()
 	{
 		// position the sprite on the center of the screen
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-
 		// add the sprite as a child to this layer
 		this->addChild(sprite, 1);
 	}
 
-	m_slotsLayer = SlotsLayer::create(); 
+	m_slotsLayer = SlotsLayer::create();
+	this->addChild(m_slotsLayer, 0);
 	
 	std::vector<FigureType> spinner1 { FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON,
 		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES };
 	m_slotsLayer->addSpinner(spinner1);
-	this->addChild(m_slotsLayer, 0);
+
+	std::vector<FigureType> spinner2{ FigureType::WATERMELON, FigureType::CHERRY, FigureType::BELL, FigureType::PRUNE, FigureType::CHERRY, FigureType::GRAPES,
+		FigureType::ORANGE, FigureType::LEMON, FigureType::LEMON, FigureType::LEMON, FigureType::CHERRY, FigureType::LEMON, FigureType::PRUNE, FigureType::LEMON, 
+		FigureType::CHERRY};
+	m_slotsLayer->addSpinner(spinner2);
+
+	std::vector<FigureType> spinner3{ FigureType::GRAPES, FigureType::WATERMELON, FigureType::PRUNE, FigureType::GRAPES, FigureType::BELL, FigureType::LEMON,
+		FigureType::CHERRY, FigureType::BELL, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES};
+	m_slotsLayer->addSpinner(spinner3);
+
+	std::vector<FigureType> spinner4{ FigureType::LEMON, FigureType::PRUNE, FigureType::PRUNE, FigureType::LEMON, FigureType::GRAPES, FigureType::ORANGE,
+		FigureType::WATERMELON, FigureType::WATERMELON, FigureType::BELL, FigureType::CHERRY, FigureType::CHERRY, FigureType::LEMON, FigureType::ORANGE,  
+		FigureType::PRUNE, FigureType::LEMON};
+	m_slotsLayer->addSpinner(spinner4);
+
+	std::vector<FigureType> spinner5{ FigureType::GRAPES, FigureType::CHERRY, FigureType::BELL, FigureType::WATERMELON, FigureType::ORANGE, FigureType::ORANGE,
+		FigureType::PRUNE, FigureType::PRUNE, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES, FigureType::BELL, FigureType::WATERMELON, 
+		FigureType::CHERRY };
+	m_slotsLayer->addSpinner(spinner5);
 
 	return true;
 }

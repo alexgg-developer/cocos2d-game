@@ -47,35 +47,44 @@ void SlotsLayer::addSpinner(std::vector<FigureType>& figures)
 {
 	SpinnerLayer* newSlotSpinLayer = SpinnerLayer::create();
 	newSlotSpinLayer->setFigures(figures);
+	float marginBetweenSpinners = 240.0f;
+	newSlotSpinLayer->setPosition(50.0f + marginBetweenSpinners * m_slotsSpinLayers.size(), 0.0f);
 	m_slotsSpinLayers.push_back(newSlotSpinLayer);
 	this->addChild(newSlotSpinLayer);
 }
 
 float SlotsLayer::spin()
 {
-	m_slotsSpinLayers[0]->prepareNextResult();
-	auto position = m_slotsSpinLayers[0]->getPosition();
-	//m_slotsSpinLayers[0]->setPosition(position.x , position.y + 212.0f);
-	float figuresHeight = m_slotsSpinLayers[0]->getFiguresHeight();
-	//float timeSpinning = 1.0f;
+	
 	std::random_device rd; // obtain a random number from hardware
 	std::mt19937 engine(rd()); // seed the generator
 	std::uniform_real_distribution<> distr(2.0f, 4.0f); // define the range
 	float timeSpinning = distr(engine);
-	float timeOneSpin = 0.05f;
+	const float delayTime = 0.1f;
+	for (size_t i = 0; i < m_slotsSpinLayers.size(); ++i) {
+		spinActions(m_slotsSpinLayers[i], timeSpinning, delayTime * i);
+	}
+
+	return timeSpinning + delayTime * (m_slotsSpinLayers.size() - 1);
+}
+
+void SlotsLayer::spinActions(SpinnerLayer * const spinner, float timeSpinning, float delayTime)
+{
+	spinner->prepareNextResult();
+	auto position = spinner->getPosition();
+	float figuresHeight = spinner->getFiguresHeight();
+	//float timeSpinning = 1.0f;
+	const float timeOneSpin = 0.05f;
 	size_t totalSpins = static_cast<size_t> (timeSpinning / (timeOneSpin * 2.0f));
+	auto initialDelay = DelayTime::create(delayTime);
 	auto moveDown = MoveBy::create(timeOneSpin, Vec2(0, figuresHeight));
 	auto moveUp = moveDown->reverse();
 
 	auto spinnerSequence = Sequence::create(moveDown, moveUp, nullptr);
 	auto repeatSpinnerSequence = Repeat::create(spinnerSequence->clone(), totalSpins);
-	auto callFunction = CallFunc::create(std::bind(&SpinnerLayer::showResult, m_slotsSpinLayers[0]));
-	auto totalSequence = Sequence::create(repeatSpinnerSequence, callFunction, nullptr);
-	m_slotsSpinLayers[0]->runAction(totalSequence);
-
-	float maximumTimeSpinning = timeSpinning;
-
-	return maximumTimeSpinning;
+	auto callFunction = CallFunc::create(std::bind(&SpinnerLayer::showResult, spinner));
+	auto totalSequence = Sequence::create(initialDelay, repeatSpinnerSequence, callFunction, nullptr);
+	spinner->runAction(totalSequence);
 }
 
 
