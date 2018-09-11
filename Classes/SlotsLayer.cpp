@@ -32,6 +32,8 @@
 USING_NS_CC;
 
 
+const float SlotsLayer::MARGIN_BETWEEN_SPINNERS = 240.0f;
+
 bool SlotsLayer::init()
 {
 	//////////////////////////////
@@ -40,6 +42,7 @@ bool SlotsLayer::init()
 	{
 		return false;
 	}
+
 	return true;
 }
 
@@ -52,8 +55,7 @@ void SlotsLayer::addSpinner(std::vector<FigureType>& figures)
 {
 	SpinnerLayer* newSlotSpinLayer = SpinnerLayer::create();
 	newSlotSpinLayer->setFigures(figures);
-	float marginBetweenSpinners = 240.0f;
-	newSlotSpinLayer->setPosition(50.0f + marginBetweenSpinners * m_slotsSpinLayers.size(), 0.0f);
+	newSlotSpinLayer->setPosition(50.0f + MARGIN_BETWEEN_SPINNERS * m_slotsSpinLayers.size(), 0.0f);
 	m_slotsSpinLayers.push_back(newSlotSpinLayer);
 	this->addChild(newSlotSpinLayer);
 }
@@ -69,13 +71,15 @@ float SlotsLayer::spin()
 	for (size_t i = 0; i < m_slotsSpinLayers.size(); ++i) {
 		spinActions(m_slotsSpinLayers[i], timeSpinning, delayTime * i);
 	}
-	calculatePrize();
-	return timeSpinning + delayTime * (m_slotsSpinLayers.size() - 1);
+	auto calculatePrizeFunction = CallFunc::create(std::bind(&SlotsLayer::calculatePrize, this));
+	auto totalTime = timeSpinning + delayTime * (m_slotsSpinLayers.size() - 1);
+	auto initialDelay = DelayTime::create(totalTime);
+	this->runAction(Sequence::create(initialDelay->clone(), calculatePrizeFunction, nullptr));
+	return totalTime;
 }
 
 void SlotsLayer::spinActions(SpinnerLayer * const spinner, float timeSpinning, float delayTime)
 {
-	spinner->prepareNextResult();
 	auto position = spinner->getPosition();
 	float figuresHeight = spinner->getFiguresHeight();
 	//float timeSpinning = 1.0f;
@@ -90,6 +94,9 @@ void SlotsLayer::spinActions(SpinnerLayer * const spinner, float timeSpinning, f
 	auto callFunction = CallFunc::create(std::bind(&SpinnerLayer::showResult, spinner));
 	auto totalSequence = Sequence::create(initialDelay, repeatSpinnerSequence, callFunction, nullptr);
 	spinner->runAction(totalSequence);
+
+	auto prepareNextResultFunction = CallFunc::create(std::bind(&SpinnerLayer::prepareNextResult, spinner));
+	this->runAction(Sequence::create(initialDelay->clone(), prepareNextResultFunction, nullptr));
 }
 
 void SlotsLayer::calculatePrize()
@@ -99,20 +106,20 @@ void SlotsLayer::calculatePrize()
 		results.push_back(spinnerLayer->getResultFigures());
 	}
 
-	std::vector<std::string> rows;
+	/*std::vector<std::string> rows;
 	for (size_t j = 0; j < results[0].size(); ++j) {
 		std::string row = std::to_string(results[0][j]);
 		for (size_t i = 1; i < results.size(); ++i) {
 			row = row + " " + std::to_string(results[i][j]);
 		}
 		rows.push_back(row);
-	}
+	}*/
 
 	m_prizes.clear();
 	for (size_t j = 0; j < results[0].size(); ++j) {
 		FigurePrize currentPrize;
 		currentPrize.type = results[0][j];
-		currentPrize.positions.push_back(Vec2(0, j));
+		currentPrize.positions.push_back(std::make_pair(0, j));
 		for (size_t i = 1; i < results.size(); ++i) {
 			if (currentPrize.type != results[i][j]) {
 				//save if there is prize (more or equal 2 continous pattern)
@@ -124,7 +131,7 @@ void SlotsLayer::calculatePrize()
 			}
 			//if there is more than 4 counts as 4.
 			if (currentPrize.positions.size() < 5) {
-				currentPrize.positions.push_back(Vec2(i, j));
+				currentPrize.positions.push_back(std::make_pair(i, j));
 			}
 		}
 		//Finishing case without change of pattern

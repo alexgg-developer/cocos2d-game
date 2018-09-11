@@ -50,6 +50,9 @@ bool SlotGameScene::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto figureSprite = Sprite::create("Figures/1.png");
+	m_figureHeight = figureSprite->getContentSize().height;
+	m_figureWidth = figureSprite->getContentSize().width;
 
 	m_counter = 0;
 	TTFConfig ttfConfig("fonts/arial.ttf", 18);
@@ -90,6 +93,7 @@ bool SlotGameScene::init()
 void SlotGameScene::spinButtonClick()
 {
 	m_spinButton->setEnabled(false);
+	clearMarkPrizes();
 	float timeSpinning = m_slotsLayer->spin();
 	auto delay = DelayTime::create(timeSpinning);
 	auto enableButtonFunction = CallFunc::create(std::bind(&ui::Button::setEnabled, m_spinButton, true));
@@ -97,7 +101,8 @@ void SlotGameScene::spinButtonClick()
 	this->runAction(sequence);
 
 	auto calculatePrizesFunction = CallFunc::create(std::bind(&SlotGameScene::calculatePrizes, this));
-	auto sequencePrizes = Sequence::createWithTwoActions(delay->clone(), calculatePrizesFunction);
+	auto markPrizesFunction = CallFunc::create(std::bind(&SlotGameScene::markPrizes, this));
+	auto sequencePrizes = Sequence::create(delay->clone(), calculatePrizesFunction, markPrizesFunction, nullptr);
 	this->runAction(sequencePrizes);
 }
 
@@ -132,15 +137,13 @@ void SlotGameScene::initSpinners()
 
 void SlotGameScene::initCreditTable()
 {
-	//enum FigureType { NONE, BELL, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY };
-
-	m_creditTable[FigureType::BELL] = { 50, 75, 100 };
-	m_creditTable[FigureType::WATERMELON] = { 20, 30, 60 };
-	m_creditTable[FigureType::GRAPES] = { 10, 20, 50 };
-	m_creditTable[FigureType::PRUNE] = { 10, 20, 40 };
-	m_creditTable[FigureType::ORANGE] = { 10, 15, 30 };
-	m_creditTable[FigureType::LEMON] = { 5, 10, 20 };
-	m_creditTable[FigureType::CHERRY] = { 2, 5, 10 };
+	m_creditTable[FigureType::BELL]			= { 50, 75, 100 };
+	m_creditTable[FigureType::WATERMELON]	= { 20, 30, 60 };
+	m_creditTable[FigureType::GRAPES]		= { 10, 20, 50 };
+	m_creditTable[FigureType::PRUNE]		= { 10, 20, 40 };
+	m_creditTable[FigureType::ORANGE]		= { 10, 15, 30 };
+	m_creditTable[FigureType::LEMON]		= { 5, 10, 20 };
+	m_creditTable[FigureType::CHERRY]		= { 2, 5, 10 };
 }
 
 void SlotGameScene::calculatePrizes()
@@ -152,4 +155,58 @@ void SlotGameScene::calculatePrizes()
 	}
 
 	m_counterLabel->setString(std::to_string(m_counter) + " credits");
+}
+
+
+
+void SlotGameScene::markPrizes()
+{
+	const auto& prizes = m_slotsLayer->getPrizes();
+		
+	Color4F transparent(1, 1, 1, 0);
+	Vec2 rectangle[4];
+	for (const auto& prize : prizes) {
+		auto firstPosition = prize.positions[0];
+		auto lastPosition = prize.positions[prize.positions.size() - 1];
+		size_t positions = lastPosition.first - firstPosition.first;
+
+		auto rectNode = DrawNode::create();
+		auto nodeWidth = m_figureWidth + SlotsLayer::MARGIN_BETWEEN_SPINNERS * positions;
+		float halfWidth = nodeWidth * 0.5f;
+		float halfHeight = m_figureHeight * 0.5f;
+
+		rectangle[0] = Vec2(-halfWidth, -halfHeight);
+		rectangle[1] = Vec2(halfWidth, -halfHeight);
+		rectangle[2] = Vec2(halfWidth, halfHeight);
+		rectangle[3] = Vec2(-halfWidth, halfHeight);		
+
+		rectNode->setAnchorPoint(Vec2(0, 0.5f));
+		rectNode->drawPolygon(rectangle, 4, transparent, 2, Color4F::RED);
+		auto xRect = 50.0f + halfWidth + SlotsLayer::MARGIN_BETWEEN_SPINNERS * firstPosition.first;
+		auto yRect = this->getContentSize().height - 20.0f - halfHeight - m_figureHeight * firstPosition.second;
+		rectNode->setPosition(xRect, yRect);
+		this->addChild(rectNode, 1);
+		m_prizeRects.push_back(rectNode);
+
+		auto credits = m_creditTable[prize.type][prize.positions.size() - 2];
+		TTFConfig ttfConfig("fonts/arial.ttf", 18);
+		auto prizeLabel = Label::createWithTTF(ttfConfig, std::to_string(credits) + " credits", TextHAlignment::CENTER, 200.0f);
+		prizeLabel->setPosition(xRect + SlotsLayer::MARGIN_BETWEEN_SPINNERS, yRect + halfHeight + 10.0f);
+		prizeLabel->setTextColor(Color4B::RED);
+		this->addChild(prizeLabel, 1);
+		m_prizeLabels.push_back(prizeLabel);
+	}	
+}
+
+void SlotGameScene::clearMarkPrizes()
+{
+	for (auto prizeRect : m_prizeRects) {
+		this->removeChild(prizeRect);
+	}
+	m_prizeRects.clear();
+
+	for (auto prizeLabel : m_prizeLabels) {
+		this->removeChild(prizeLabel);
+	}
+	m_prizeLabels.clear();
 }

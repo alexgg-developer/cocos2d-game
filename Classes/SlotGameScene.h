@@ -47,12 +47,17 @@ private:
 	SlotsLayer* m_slotsLayer;
 	Label* m_counterLabel;
 	size_t m_counter;
+	float m_figureWidth, m_figureHeight;
 
 	std::map<FigureType, std::vector<size_t>> m_creditTable;
+	std::vector<DrawNode*> m_prizeRects;
+	std::vector<Label*> m_prizeLabels;
 
+	void calculatePrizes();
+	void clearMarkPrizes();
 	void initCreditTable();
 	void initSpinners();
-	void calculatePrizes();
+	void markPrizes();
 };
 
 #endif //_SLOTGAME_SCENE_H__S

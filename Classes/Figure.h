@@ -35,7 +35,7 @@ enum FigureType { NONE, BELL, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY }
 struct FigurePrize
 {
 	FigureType type;
-	std::vector<Vec2> positions;
+	std::vector<std::pair<size_t, size_t>> positions;
 };
 
 #endif //_FIGURES_H__S

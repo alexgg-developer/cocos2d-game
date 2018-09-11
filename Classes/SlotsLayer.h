@@ -38,6 +38,8 @@ USING_NS_CC;
 class SlotsLayer : public cocos2d::Layer
 {
 public:
+	static const float MARGIN_BETWEEN_SPINNERS;
+
 	void addSpinner(std::vector<FigureType>& figures);
 	std::vector<FigurePrize> getPrizes();
     virtual bool init();
