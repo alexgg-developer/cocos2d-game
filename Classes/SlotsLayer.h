@@ -38,14 +38,17 @@ USING_NS_CC;
 class SlotsLayer : public cocos2d::Layer
 {
 public:
-    virtual bool init();
 	void addSpinner(std::vector<FigureType>& figures);
+	std::vector<FigurePrize> getPrizes();
+    virtual bool init();
 	float spin();
     // implement the "static create()" method manually
     CREATE_FUNC(SlotsLayer);
 private:
 	std::vector<SpinnerLayer*> m_slotsSpinLayers;
+	std::vector<FigurePrize> m_prizes;
 
+	void calculatePrize();
 	void spinActions(SpinnerLayer * const spinner, float timeSpinning, float delayTime);
 };
 

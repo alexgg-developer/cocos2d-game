@@ -40,6 +40,7 @@ bool SpinnerLayer::init()
 	}
 
 	m_nextResult = { nullptr, nullptr, nullptr };
+	m_nextResultFigures = { FigureType::NONE, FigureType::NONE, FigureType::NONE };
 
 	auto figureSprite = Sprite::create("Figures/1.png");
 	m_figureHeight = figureSprite->getContentSize().height;
@@ -79,6 +80,7 @@ void SpinnerLayer::prepareNextResult()
 		for (size_t i = 0; i < m_nextResult.size(); ++i) {
 			this->removeChild(m_nextResult[i]);
 			m_nextResult[i] = nullptr;
+			m_nextResultFigures[i] = FigureType::NONE;
 		}
 	}
 
@@ -94,6 +96,7 @@ void SpinnerLayer::prepareNextResult()
 	figureSpriteTop->setVisible(false);
 	this->addChild(figureSpriteTop);
 	m_nextResult[0] = figureSpriteTop;
+	m_nextResultFigures[0] = m_figures[randomFigure];
 
 	randomFigure = (randomFigure + 1) % m_figures.size();
 
@@ -103,6 +106,7 @@ void SpinnerLayer::prepareNextResult()
 	figureSpriteMiddle->setVisible(false);
 	this->addChild(figureSpriteMiddle);
 	m_nextResult[1] = figureSpriteMiddle;
+	m_nextResultFigures[1] = m_figures[randomFigure];
 
 	randomFigure = (randomFigure + 1) % m_figures.size();
 
@@ -112,6 +116,7 @@ void SpinnerLayer::prepareNextResult()
 	figureSpriteBottom->setVisible(false);
 	this->addChild(figureSpriteBottom);
 	m_nextResult[2] = figureSpriteBottom;
+	m_nextResultFigures[2] = m_figures[randomFigure];
 }
 
 
@@ -126,3 +131,7 @@ void SpinnerLayer::showResult()
 	}
 }
 
+const std::vector<FigureType> SpinnerLayer::getResultFigures() const
+{
+	return m_nextResultFigures;
+}

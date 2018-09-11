@@ -36,6 +36,7 @@ class SpinnerLayer : public cocos2d::Layer
 {
 public:
 	float getFiguresHeight() const;
+	const std::vector<FigureType> getResultFigures() const;
 	virtual bool init();
 	void prepareNextResult();
 	void setFigures(std::vector<FigureType>& figures);
@@ -46,6 +47,7 @@ private:
 	float m_figureHeight, m_figureWidth;
 	std::vector<FigureType> m_figures;
 	std::vector<Sprite*> m_spritesFigures;
+	std::vector<FigureType> m_nextResultFigures;
 	std::vector<Sprite*> m_nextResult;
 };
 

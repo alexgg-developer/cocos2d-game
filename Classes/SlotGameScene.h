@@ -45,6 +45,14 @@ public:
 private:
 	ui::Button* m_spinButton;
 	SlotsLayer* m_slotsLayer;
+	Label* m_counterLabel;
+	size_t m_counter;
+
+	std::map<FigureType, std::vector<size_t>> m_creditTable;
+
+	void initCreditTable();
+	void initSpinners();
+	void calculatePrizes();
 };
 
 #endif //_SLOTGAME_SCENE_H__S

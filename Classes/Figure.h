@@ -30,6 +30,12 @@
 
 USING_NS_CC;
 
-enum FigureType { BELL = 1, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY };
+enum FigureType { NONE, BELL, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY };
+
+struct FigurePrize
+{
+	FigureType type;
+	std::vector<Vec2> positions;
+};
 
 #endif //_FIGURES_H__S

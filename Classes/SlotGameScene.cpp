@@ -44,23 +44,21 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool SlotGameScene::init()
 {
-	//////////////////////////////
-	// 1. super init first
-	if (!Scene::init())
-	{
+	if (!Scene::init()) {
 		return false;
 	}
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
+	m_counter = 0;
+	TTFConfig ttfConfig("fonts/arial.ttf", 18);
+	m_counterLabel = Label::createWithTTF(ttfConfig, "0 credits", TextHAlignment::CENTER, 200.0f);
+	m_counterLabel->setPosition(visibleSize.width - 230.0f, 45.0f);
+	m_counterLabel->setTextColor(Color4B::RED);
+	addChild(m_counterLabel, 3);
 
-	// add a "close" icon to exit the progress. it's an autorelease object
 	m_spinButton = ui::Button::create("spin_normal.png", "spin_click.png", "spin_disable.png");
-	//m_spinButton->setSize(Size(250, 50));
 	m_spinButton->setContentSize(Size(250, 50));
 	m_spinButton->ignoreContentAdaptWithSize(false);
 	m_spinButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
@@ -74,62 +72,17 @@ bool SlotGameScene::init()
 		}
 	});
 
-	if (m_spinButton == nullptr ||
-		m_spinButton->getContentSize().width <= 0 ||
-		m_spinButton->getContentSize().height <= 0)
-	{
-		problemLoading("problem with images");
-	}
-	else
-	{
-		//float width = m_spinButton->getContentSize().width;
-		//float height = m_spinButton->getContentSize().height;
-		float x = visibleSize.width * 0.5f;
-		float y = 45.0f + m_spinButton->getContentSize().height / 2;
-		m_spinButton->setPosition(Vec2(x, y));
-	}
-
+	float x = visibleSize.width * 0.5f;
+	float y = 45.0f + m_spinButton->getContentSize().height / 2;
+	m_spinButton->setPosition(Vec2(x, y));
 	this->addChild(m_spinButton, 2);
 
-	// add "SlotGameScene" splash screen"
 	auto sprite = Sprite::create("interface.png");
-	if (sprite == nullptr)
-	{
-		problemLoading("'interface.png'");
-	}
-	else
-	{
-		// position the sprite on the center of the screen
-		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		// add the sprite as a child to this layer
-		this->addChild(sprite, 1);
-	}
+	sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	this->addChild(sprite, 1);
 
-	m_slotsLayer = SlotsLayer::create();
-	this->addChild(m_slotsLayer, 0);
-	
-	std::vector<FigureType> spinner1 { FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON,
-		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES };
-	m_slotsLayer->addSpinner(spinner1);
-
-	std::vector<FigureType> spinner2{ FigureType::WATERMELON, FigureType::CHERRY, FigureType::BELL, FigureType::PRUNE, FigureType::CHERRY, FigureType::GRAPES,
-		FigureType::ORANGE, FigureType::LEMON, FigureType::LEMON, FigureType::LEMON, FigureType::CHERRY, FigureType::LEMON, FigureType::PRUNE, FigureType::LEMON, 
-		FigureType::CHERRY};
-	m_slotsLayer->addSpinner(spinner2);
-
-	std::vector<FigureType> spinner3{ FigureType::GRAPES, FigureType::WATERMELON, FigureType::PRUNE, FigureType::GRAPES, FigureType::BELL, FigureType::LEMON,
-		FigureType::CHERRY, FigureType::BELL, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES};
-	m_slotsLayer->addSpinner(spinner3);
-
-	std::vector<FigureType> spinner4{ FigureType::LEMON, FigureType::PRUNE, FigureType::PRUNE, FigureType::LEMON, FigureType::GRAPES, FigureType::ORANGE,
-		FigureType::WATERMELON, FigureType::WATERMELON, FigureType::BELL, FigureType::CHERRY, FigureType::CHERRY, FigureType::LEMON, FigureType::ORANGE,  
-		FigureType::PRUNE, FigureType::LEMON};
-	m_slotsLayer->addSpinner(spinner4);
-
-	std::vector<FigureType> spinner5{ FigureType::GRAPES, FigureType::CHERRY, FigureType::BELL, FigureType::WATERMELON, FigureType::ORANGE, FigureType::ORANGE,
-		FigureType::PRUNE, FigureType::PRUNE, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES, FigureType::BELL, FigureType::WATERMELON, 
-		FigureType::CHERRY };
-	m_slotsLayer->addSpinner(spinner5);
+	initSpinners();
+	initCreditTable();
 
 	return true;
 }
@@ -142,4 +95,61 @@ void SlotGameScene::spinButtonClick()
 	auto enableButtonFunction = CallFunc::create(std::bind(&ui::Button::setEnabled, m_spinButton, true));
 	auto sequence = Sequence::createWithTwoActions(delay, enableButtonFunction);
 	this->runAction(sequence);
+
+	auto calculatePrizesFunction = CallFunc::create(std::bind(&SlotGameScene::calculatePrizes, this));
+	auto sequencePrizes = Sequence::createWithTwoActions(delay->clone(), calculatePrizesFunction);
+	this->runAction(sequencePrizes);
+}
+
+void SlotGameScene::initSpinners()
+{
+	m_slotsLayer = SlotsLayer::create();
+	this->addChild(m_slotsLayer, 0);
+
+	std::vector<FigureType> spinner1{ FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON,
+		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES };
+	m_slotsLayer->addSpinner(spinner1);
+
+	std::vector<FigureType> spinner2{ FigureType::WATERMELON, FigureType::CHERRY, FigureType::BELL, FigureType::PRUNE, FigureType::CHERRY, FigureType::GRAPES,
+		FigureType::ORANGE, FigureType::LEMON, FigureType::LEMON, FigureType::LEMON, FigureType::CHERRY, FigureType::LEMON, FigureType::PRUNE, FigureType::LEMON,
+		FigureType::CHERRY };
+	m_slotsLayer->addSpinner(spinner2);
+
+	std::vector<FigureType> spinner3{ FigureType::GRAPES, FigureType::WATERMELON, FigureType::PRUNE, FigureType::GRAPES, FigureType::BELL, FigureType::LEMON,
+		FigureType::CHERRY, FigureType::BELL, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES };
+	m_slotsLayer->addSpinner(spinner3);
+
+	std::vector<FigureType> spinner4{ FigureType::LEMON, FigureType::PRUNE, FigureType::PRUNE, FigureType::LEMON, FigureType::GRAPES, FigureType::ORANGE,
+		FigureType::WATERMELON, FigureType::WATERMELON, FigureType::BELL, FigureType::CHERRY, FigureType::CHERRY, FigureType::LEMON, FigureType::ORANGE,
+		FigureType::PRUNE, FigureType::LEMON };
+	m_slotsLayer->addSpinner(spinner4);
+
+	std::vector<FigureType> spinner5{ FigureType::GRAPES, FigureType::CHERRY, FigureType::BELL, FigureType::WATERMELON, FigureType::ORANGE, FigureType::ORANGE,
+		FigureType::PRUNE, FigureType::PRUNE, FigureType::ORANGE, FigureType::ORANGE, FigureType::GRAPES, FigureType::BELL, FigureType::WATERMELON,
+		FigureType::CHERRY };
+	m_slotsLayer->addSpinner(spinner5);
+}
+
+void SlotGameScene::initCreditTable()
+{
+	//enum FigureType { NONE, BELL, WATERMELON, GRAPES, PRUNE, ORANGE, LEMON, CHERRY };
+
+	m_creditTable[FigureType::BELL] = { 50, 75, 100 };
+	m_creditTable[FigureType::WATERMELON] = { 20, 30, 60 };
+	m_creditTable[FigureType::GRAPES] = { 10, 20, 50 };
+	m_creditTable[FigureType::PRUNE] = { 10, 20, 40 };
+	m_creditTable[FigureType::ORANGE] = { 10, 15, 30 };
+	m_creditTable[FigureType::LEMON] = { 5, 10, 20 };
+	m_creditTable[FigureType::CHERRY] = { 2, 5, 10 };
+}
+
+void SlotGameScene::calculatePrizes()
+{
+	const auto& prizes = m_slotsLayer->getPrizes();
+	for (const auto& prize : prizes) {
+		size_t currentCredits = m_creditTable[prize.type][prize.positions.size() - 2];
+		m_counter += currentCredits;
+	}
+
+	m_counterLabel->setString(std::to_string(m_counter) + " credits");
 }

@@ -42,3 +42,4 @@ Debug
 *.log
 *.tlog
 *.cache
+/proj.win32/Release.win32

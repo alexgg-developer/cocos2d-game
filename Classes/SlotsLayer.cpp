@@ -43,6 +43,11 @@ bool SlotsLayer::init()
 	return true;
 }
 
+std::vector<FigurePrize> SlotsLayer::getPrizes()
+{
+	return m_prizes;
+}
+
 void SlotsLayer::addSpinner(std::vector<FigureType>& figures)
 {
 	SpinnerLayer* newSlotSpinLayer = SpinnerLayer::create();
@@ -64,7 +69,7 @@ float SlotsLayer::spin()
 	for (size_t i = 0; i < m_slotsSpinLayers.size(); ++i) {
 		spinActions(m_slotsSpinLayers[i], timeSpinning, delayTime * i);
 	}
-
+	calculatePrize();
 	return timeSpinning + delayTime * (m_slotsSpinLayers.size() - 1);
 }
 
@@ -86,5 +91,50 @@ void SlotsLayer::spinActions(SpinnerLayer * const spinner, float timeSpinning, f
 	auto totalSequence = Sequence::create(initialDelay, repeatSpinnerSequence, callFunction, nullptr);
 	spinner->runAction(totalSequence);
 }
+
+void SlotsLayer::calculatePrize()
+{
+	std::vector<std::vector<FigureType>> results;
+	for (const auto spinnerLayer : m_slotsSpinLayers) {
+		results.push_back(spinnerLayer->getResultFigures());
+	}
+
+	std::vector<std::string> rows;
+	for (size_t j = 0; j < results[0].size(); ++j) {
+		std::string row = std::to_string(results[0][j]);
+		for (size_t i = 1; i < results.size(); ++i) {
+			row = row + " " + std::to_string(results[i][j]);
+		}
+		rows.push_back(row);
+	}
+
+	m_prizes.clear();
+	for (size_t j = 0; j < results[0].size(); ++j) {
+		FigurePrize currentPrize;
+		currentPrize.type = results[0][j];
+		currentPrize.positions.push_back(Vec2(0, j));
+		for (size_t i = 1; i < results.size(); ++i) {
+			if (currentPrize.type != results[i][j]) {
+				//save if there is prize (more or equal 2 continous pattern)
+				if (currentPrize.positions.size() >= 2) {
+					m_prizes.push_back(currentPrize);
+				}
+				currentPrize.type = results[i][j];
+				currentPrize.positions.clear();
+			}
+			//if there is more than 4 counts as 4.
+			if (currentPrize.positions.size() < 5) {
+				currentPrize.positions.push_back(Vec2(i, j));
+			}
+		}
+		//Finishing case without change of pattern
+		if (currentPrize.positions.size() >= 2) {
+			m_prizes.push_back(currentPrize);
+		}
+	}
+
+}
+
+
 
 
