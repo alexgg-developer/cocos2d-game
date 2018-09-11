@@ -57,6 +57,7 @@ void SpinnerLayer::setFigures(std::vector<FigureType>& figures)
 		figureSprite->setPosition(50.0f + m_figureWidth * 0.5f,
 			this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight * i);
 		this->addChild(figureSprite);
+		m_spritesFigures.push_back(figureSprite);
 		++i;
 	}
 	m_figures = figures;
@@ -72,15 +73,55 @@ void SpinnerLayer::prepareNextResult()
 	std::random_device rd; // obtain a random number from hardware
 	std::mt19937 engine(rd()); // seed the generator
 	std::uniform_int_distribution<> distr(0, m_figures.size()-1); // define the range
-	
-	int randomFigure = distr(engine);
 
-	CCLOG("%i", randomFigure);
+	if (m_nextResult[0] != nullptr) {
+		for (size_t i = 0; i < m_nextResult.size(); ++i) {
+			this->removeChild(m_nextResult[i]);
+			m_nextResult[i] = nullptr;
+		}
+	}
+
+	for (const auto spriteFigure : m_spritesFigures) {
+		spriteFigure->setVisible(true);
+	}
+
+	int randomFigure = distr(engine);
+	//CCLOG("%i", randomFigure);
+	auto figureSpriteTop = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
+	figureSpriteTop->setPosition(50.0f + m_figureWidth * 0.5f,
+		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f);
+	figureSpriteTop->setVisible(false);
+	this->addChild(figureSpriteTop);
+	m_nextResult[0] = figureSpriteTop;
+
+	randomFigure = (randomFigure + 1) % m_figures.size();
+
+	auto figureSpriteMiddle = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
+	figureSpriteMiddle->setPosition(50.0f + m_figureWidth * 0.5f,
+		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight);
+	figureSpriteMiddle->setVisible(false);
+	this->addChild(figureSpriteMiddle);
+	m_nextResult[1] = figureSpriteMiddle;
+
+	randomFigure = (randomFigure + 1) % m_figures.size();
+
+	auto figureSpriteBottom = Sprite::create("Figures/" + std::to_string(m_figures[randomFigure]) + ".png");
+	figureSpriteBottom->setPosition(50.0f + m_figureWidth * 0.5f,
+		this->getContentSize().height - 20.0f - m_figureHeight * 0.5f - m_figureHeight * 2.0f);
+	figureSpriteBottom->setVisible(false);
+	this->addChild(figureSpriteBottom);
+	m_nextResult[2] = figureSpriteBottom;
 }
 
 
 void SpinnerLayer::showResult()
 {
-	printf("show result");
+	for (const auto spriteFigure : m_spritesFigures) {
+		spriteFigure->setVisible(false);
+	}
+
+	for (const auto spriteResult : m_nextResult) {
+		spriteResult->setVisible(true);
+	}
 }
 

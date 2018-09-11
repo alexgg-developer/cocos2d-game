@@ -57,13 +57,16 @@ float SlotsLayer::spin()
 	auto position = m_slotsSpinLayers[0]->getPosition();
 	//m_slotsSpinLayers[0]->setPosition(position.x , position.y + 212.0f);
 	float figuresHeight = m_slotsSpinLayers[0]->getFiguresHeight();
-	float timeSpinning = 1.0f;
+	//float timeSpinning = 1.0f;
+	std::random_device rd; // obtain a random number from hardware
+	std::mt19937 engine(rd()); // seed the generator
+	std::uniform_real_distribution<> distr(2.0f, 4.0f); // define the range
+	float timeSpinning = distr(engine);
 	float timeOneSpin = 0.05f;
 	size_t totalSpins = static_cast<size_t> (timeSpinning / (timeOneSpin * 2.0f));
 	auto moveDown = MoveBy::create(timeOneSpin, Vec2(0, figuresHeight));
 	auto moveUp = moveDown->reverse();
-	/*auto seq = Sequence::create(,
-		MoveBy::create(0.1f, Vec2(0, -figuresHeight)));*/
+
 	auto spinnerSequence = Sequence::create(moveDown, moveUp, nullptr);
 	auto repeatSpinnerSequence = Repeat::create(spinnerSequence->clone(), totalSpins);
 	auto callFunction = CallFunc::create(std::bind(&SpinnerLayer::showResult, m_slotsSpinLayers[0]));

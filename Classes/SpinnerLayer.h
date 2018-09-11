@@ -45,6 +45,7 @@ public:
 private:
 	float m_figureHeight, m_figureWidth;
 	std::vector<FigureType> m_figures;
+	std::vector<Sprite*> m_spritesFigures;
 	std::vector<Sprite*> m_nextResult;
 };
 
