@@ -39,6 +39,8 @@ bool SpinnerLayer::init()
 		return false;
 	}
 
+	m_nextResult = { nullptr, nullptr, nullptr };
+
 	auto figureSprite = Sprite::create("Figures/1.png");
 	m_figureHeight = figureSprite->getContentSize().height;
 	m_figureWidth = figureSprite->getContentSize().width;
@@ -46,7 +48,7 @@ bool SpinnerLayer::init()
 	return true;
 }
 
-void SpinnerLayer::addFigures(const std::vector<FigureType>& figures)
+void SpinnerLayer::setFigures(std::vector<FigureType>& figures)
 {
 	size_t i = 0;
 	for (FigureType figure : figures) {
@@ -57,5 +59,28 @@ void SpinnerLayer::addFigures(const std::vector<FigureType>& figures)
 		this->addChild(figureSprite);
 		++i;
 	}
+	m_figures = figures;
+}
+
+float SpinnerLayer::getFiguresHeight() const
+{
+	return m_figureHeight * m_figures.size();
+}
+
+void SpinnerLayer::prepareNextResult()
+{
+	std::random_device rd; // obtain a random number from hardware
+	std::mt19937 engine(rd()); // seed the generator
+	std::uniform_int_distribution<> distr(0, m_figures.size()-1); // define the range
+	
+	int randomFigure = distr(engine);
+
+	CCLOG("%i", randomFigure);
+}
+
+
+void SpinnerLayer::showResult()
+{
+	printf("show result");
 }
 

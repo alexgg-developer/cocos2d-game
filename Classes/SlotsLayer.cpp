@@ -43,16 +43,36 @@ bool SlotsLayer::init()
 	return true;
 }
 
-void SlotsLayer::addSpinner(const std::vector<FigureType>& figures)
+void SlotsLayer::addSpinner(std::vector<FigureType>& figures)
 {
 	SpinnerLayer* newSlotSpinLayer = SpinnerLayer::create();
-	newSlotSpinLayer->addFigures(figures);
+	newSlotSpinLayer->setFigures(figures);
 	m_slotsSpinLayers.push_back(newSlotSpinLayer);
 	this->addChild(newSlotSpinLayer);
 }
 
-void SlotsLayer::spin()
+float SlotsLayer::spin()
 {
+	m_slotsSpinLayers[0]->prepareNextResult();
 	auto position = m_slotsSpinLayers[0]->getPosition();
-	m_slotsSpinLayers[0]->setPosition(position.x , position.y + 212.0f);
+	//m_slotsSpinLayers[0]->setPosition(position.x , position.y + 212.0f);
+	float figuresHeight = m_slotsSpinLayers[0]->getFiguresHeight();
+	float timeSpinning = 1.0f;
+	float timeOneSpin = 0.05f;
+	size_t totalSpins = static_cast<size_t> (timeSpinning / (timeOneSpin * 2.0f));
+	auto moveDown = MoveBy::create(timeOneSpin, Vec2(0, figuresHeight));
+	auto moveUp = moveDown->reverse();
+	/*auto seq = Sequence::create(,
+		MoveBy::create(0.1f, Vec2(0, -figuresHeight)));*/
+	auto spinnerSequence = Sequence::create(moveDown, moveUp, nullptr);
+	auto repeatSpinnerSequence = Repeat::create(spinnerSequence->clone(), totalSpins);
+	auto callFunction = CallFunc::create(std::bind(&SpinnerLayer::showResult, m_slotsSpinLayers[0]));
+	auto totalSequence = Sequence::create(repeatSpinnerSequence, callFunction, nullptr);
+	m_slotsSpinLayers[0]->runAction(totalSequence);
+
+	float maximumTimeSpinning = timeSpinning;
+
+	return maximumTimeSpinning;
 }
+
+

@@ -39,8 +39,8 @@ class SlotsLayer : public cocos2d::Layer
 {
 public:
     virtual bool init();
-	void addSpinner(const std::vector<FigureType>& figures);
-	void spin();
+	void addSpinner(std::vector<FigureType>& figures);
+	float spin();
     // implement the "static create()" method manually
     CREATE_FUNC(SlotsLayer);
 private:

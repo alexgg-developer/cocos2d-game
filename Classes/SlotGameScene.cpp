@@ -106,9 +106,11 @@ bool SlotGameScene::init()
 		this->addChild(sprite, 1);
 	}
 
-	m_slotsLayer = SlotsLayer::create();
-	m_slotsLayer->addSpinner({ FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON, 
-		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES });
+	m_slotsLayer = SlotsLayer::create(); 
+	
+	std::vector<FigureType> spinner1 { FigureType::ORANGE, FigureType::BELL, FigureType::WATERMELON, FigureType::CHERRY, FigureType::PRUNE, FigureType::LEMON,
+		FigureType::GRAPES, FigureType::PRUNE, FigureType::BELL, FigureType::BELL, FigureType::ORANGE, FigureType::GRAPES };
+	m_slotsLayer->addSpinner(spinner1);
 	this->addChild(m_slotsLayer, 0);
 
 	return true;
@@ -116,6 +118,10 @@ bool SlotGameScene::init()
 
 void SlotGameScene::spinButtonClick()
 {
-	m_slotsLayer->spin();
-	//m_spinButton->setEnabled(false);
+	m_spinButton->setEnabled(false);
+	float timeSpinning = m_slotsLayer->spin();
+	auto delay = DelayTime::create(timeSpinning);
+	auto enableButtonFunction = CallFunc::create(std::bind(&ui::Button::setEnabled, m_spinButton, true));
+	auto sequence = Sequence::createWithTwoActions(delay, enableButtonFunction);
+	this->runAction(sequence);
 }
